@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.samples.petclinic.model.Role;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.UserRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,9 +27,9 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     private SimpleJdbcInsert insertUser;
 
     @Autowired
-    public JdbcUserRepositoryImpl(DataSource dataSource) {
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.insertUser = new SimpleJdbcInsert(dataSource).withTableName("users");
+    public JdbcUserRepositoryImpl(TracingWrappedJdbcTemplate tracingTemplate) {
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(tracingTemplate);
+        this.insertUser = new SimpleJdbcInsert(tracingTemplate).withTableName("users");
     }
 
     @Override

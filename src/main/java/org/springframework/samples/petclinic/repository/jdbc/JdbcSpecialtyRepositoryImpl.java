@@ -33,6 +33,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.repository.SpecialtyRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -49,9 +50,9 @@ public class JdbcSpecialtyRepositoryImpl implements SpecialtyRepository {
 	private SimpleJdbcInsert insertSpecialty;
 
 	@Autowired
-	public JdbcSpecialtyRepositoryImpl(DataSource dataSource) {
-		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-		this.insertSpecialty = new SimpleJdbcInsert(dataSource)
+	public JdbcSpecialtyRepositoryImpl(TracingWrappedJdbcTemplate tracingTemplate) {
+		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(tracingTemplate);
+		this.insertSpecialty = new SimpleJdbcInsert(tracingTemplate)
 	            .withTableName("specialties")
 	            .usingGeneratedKeyColumns("id");
 	}

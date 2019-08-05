@@ -37,6 +37,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Repository;
 
@@ -61,13 +62,13 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
     private SimpleJdbcInsert insertOwner;
 
     @Autowired
-    public JdbcOwnerRepositoryImpl(DataSource dataSource) {
+    public JdbcOwnerRepositoryImpl(TracingWrappedJdbcTemplate tracingTemplate) {
 
-        this.insertOwner = new SimpleJdbcInsert(dataSource)
+        this.insertOwner = new SimpleJdbcInsert(tracingTemplate)
             .withTableName("owners")
             .usingGeneratedKeyColumns("id");
 
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(tracingTemplate);
 
     }
 

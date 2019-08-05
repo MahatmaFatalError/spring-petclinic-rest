@@ -38,6 +38,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.repository.VetRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Repository;
 
@@ -62,10 +63,10 @@ public class JdbcVetRepositoryImpl implements VetRepository {
 	private SimpleJdbcInsert insertVet;
 
     @Autowired
-    public JdbcVetRepositoryImpl(DataSource dataSource, JdbcTemplate jdbcTemplate) {
+    public JdbcVetRepositoryImpl(DataSource dataSource, TracingWrappedJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-		this.insertVet = new SimpleJdbcInsert(dataSource).withTableName("vets").usingGeneratedKeyColumns("id");
-		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		this.insertVet = new SimpleJdbcInsert(jdbcTemplate).withTableName("vets").usingGeneratedKeyColumns("id");
+		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     /**

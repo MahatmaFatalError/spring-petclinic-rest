@@ -29,6 +29,7 @@ import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -62,10 +63,10 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
     protected SimpleJdbcInsert insertVisit;
 
     @Autowired
-    public JdbcVisitRepositoryImpl(DataSource dataSource) {
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    public JdbcVisitRepositoryImpl(TracingWrappedJdbcTemplate tracingTemplate) {
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(tracingTemplate);
 
-        this.insertVisit = new SimpleJdbcInsert(dataSource)
+        this.insertVisit = new SimpleJdbcInsert(tracingTemplate)
             .withTableName("visits")
             .usingGeneratedKeyColumns("id");
     }

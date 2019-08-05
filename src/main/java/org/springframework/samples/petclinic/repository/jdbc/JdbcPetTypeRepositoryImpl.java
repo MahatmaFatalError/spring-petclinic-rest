@@ -37,6 +37,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.PetTypeRepository;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -53,9 +54,9 @@ public class JdbcPetTypeRepositoryImpl implements PetTypeRepository {
 	private SimpleJdbcInsert insertPetType;
 	
 	@Autowired
-	public JdbcPetTypeRepositoryImpl(DataSource dataSource) {
-		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-		this.insertPetType = new SimpleJdbcInsert(dataSource)
+	public JdbcPetTypeRepositoryImpl(TracingWrappedJdbcTemplate tracingTemplate) {
+		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(tracingTemplate);
+		this.insertPetType = new SimpleJdbcInsert(tracingTemplate)
 	            .withTableName("types")
 	            .usingGeneratedKeyColumns("id");
 	}
