@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.tracing.TracingWrappedJdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -52,38 +54,41 @@ public class PetRestController {
 	@Autowired
 	private ClinicService clinicService;
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@Autowired
+	private TracingWrappedJdbcTemplate jdbcTemplate;
+
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "/{petId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Pet> getPet(@PathVariable("petId") int petId){
+	public ResponseEntity<Pet> getPet(@PathVariable("petId") int petId) {
 		Pet pet = this.clinicService.findPetById(petId);
-		if(pet == null){
+		if (pet == null) {
 			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Pet>(pet, HttpStatus.OK);
 	}
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Collection<Pet>> getPets(){
+	public ResponseEntity<Collection<Pet>> getPets() {
 		Collection<Pet> pets = this.clinicService.findAllPets();
-		if(pets.isEmpty()){
+		if (pets.isEmpty()) {
 			return new ResponseEntity<Collection<Pet>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "/pettypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Collection<PetType>> getPetTypes(){
+	public ResponseEntity<Collection<PetType>> getPetTypes() {
 		return new ResponseEntity<Collection<PetType>>(this.clinicService.findPetTypes(), HttpStatus.OK);
 	}
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Pet> addPet(@RequestBody @Valid Pet pet, BindingResult bindingResult, UriComponentsBuilder ucBuilder){
+	public ResponseEntity<Pet> addPet(@RequestBody @Valid Pet pet, BindingResult bindingResult, UriComponentsBuilder ucBuilder) {
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
-		if(bindingResult.hasErrors() || (pet == null)){
+		if (bindingResult.hasErrors() || (pet == null)) {
 			errors.addAllErrors(bindingResult);
 			headers.add("errors", errors.toJSON());
 			return new ResponseEntity<Pet>(headers, HttpStatus.BAD_REQUEST);
@@ -93,18 +98,18 @@ public class PetRestController {
 		return new ResponseEntity<Pet>(pet, headers, HttpStatus.CREATED);
 	}
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "/{petId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Pet> updatePet(@PathVariable("petId") int petId, @RequestBody @Valid Pet pet, BindingResult bindingResult){
+	public ResponseEntity<Pet> updatePet(@PathVariable("petId") int petId, @RequestBody @Valid Pet pet, BindingResult bindingResult) {
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
-		if(bindingResult.hasErrors() || (pet == null)){
+		if (bindingResult.hasErrors() || (pet == null)) {
 			errors.addAllErrors(bindingResult);
 			headers.add("errors", errors.toJSON());
 			return new ResponseEntity<Pet>(headers, HttpStatus.BAD_REQUEST);
 		}
 		Pet currentPet = this.clinicService.findPetById(petId);
-		if(currentPet == null){
+		if (currentPet == null) {
 			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
 		}
 		currentPet.setBirthDate(pet.getBirthDate());
@@ -115,17 +120,26 @@ public class PetRestController {
 		return new ResponseEntity<Pet>(currentPet, HttpStatus.NO_CONTENT);
 	}
 
-    @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
 	@RequestMapping(value = "/{petId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@Transactional
-	public ResponseEntity<Void> deletePet(@PathVariable("petId") int petId){
+	public ResponseEntity<Void> deletePet(@PathVariable("petId") int petId) {
 		Pet pet = this.clinicService.findPetById(petId);
-		if(pet == null){
+		if (pet == null) {
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 		this.clinicService.deletePet(pet);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
+	@RequestMapping(value = "/lock", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@Transactional
+	public ResponseEntity<Void> lockPetTable(@RequestParam(name = "duration", defaultValue = "2000") Integer millis) throws InterruptedException {
+		jdbcTemplate.execute("LOCK TABLE pets IN ACCESS EXCLUSIVE MODE");
+		Thread.sleep(millis);
+
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
 
 }
