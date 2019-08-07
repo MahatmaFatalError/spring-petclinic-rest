@@ -52,12 +52,12 @@ Before do this, would be good to check properties defined in application-mysql.p
 ```
 spring.datasource.url = jdbc:mysql://localhost:3306/petclinic?useUnicode=true
 spring.datasource.username=pc
-spring.datasource.password=petclinic 
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver 
+spring.datasource.password=petclinic
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.jpa.database=MYSQL
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 spring.jpa.hibernate.ddl-auto=none
-```      
+```
 
 You may also start a MySql database with docker:
 
@@ -98,7 +98,7 @@ petclinic.security.enable=true
 ```
 This will secure all APIs and in order to access them, basic authentication is required.
 Apart from authentication, APIs also require authorization. This is done via roles that a user can have.
-The existing roles are listed below with the corresponding permissions 
+The existing roles are listed below with the corresponding permissions
 * OWNER_ADMIN -> OwnerController, PetController, PetTypeController (getAllPetTypes and getPetType), VisitController
 * VET_ADMIN   -> PetTypeController, SpecialityController, VetController
 * ADMIN       -> UserController
@@ -165,13 +165,13 @@ The [pom.xml](pom.xml) has been configured to publish the image with a the `spri
 The Spring Petclinic master branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
 GitHub org is the "canonical" implementation, currently based on Spring Boot and Thymeleaf.
 
-This [spring-petclinic-rest](https://github.com/spring-petclinic/spring-petclinic-rest/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
+This [spring-petclinic-rest](https://github.com/spring-petclinic/spring-petclinic-rest/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html)
 hosted in a special GitHub org: [spring-petclinic](https://github.com/spring-petclinic).
 If you have a special interest in a different technology stack
 that could be used to implement the Pet Clinic then please join the community there.
 
 
-# Contributing
+## Contributing
 
 The [issue tracker](https://github.com/spring-petclinic/spring-petclinic-rest/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
 
