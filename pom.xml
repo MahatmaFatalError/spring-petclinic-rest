@@ -167,18 +167,7 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>2.3.0</version>
 		</dependency>
-
-		<!-- Gatling -->
-		<dependency>
-			<groupId>io.gatling.highcharts</groupId>
-			<artifactId>gatling-charts-highcharts</artifactId>
-			<scope>test</scope>
-			<version>3.2.0</version>
-		</dependency>
 	</dependencies>
-
-
-
 
 	<build>
 		<plugins>
@@ -238,35 +227,7 @@
 					</to>
 				</configuration>
 			</plugin>
-
-			<!-- Gatling -->
-			<plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>3.0.3</version>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>4.1.1</version> <!-- 4.1.1 -->
-                <executions>
-                    <execution>
-                        <id>scala-test-compile</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
-
-
-
 	</build>
 
 </project>

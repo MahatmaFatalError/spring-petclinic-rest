@@ -33,10 +33,10 @@ class LoadTest extends Simulation {
     )
   }
 
-  val myScenario: ScenarioBuilder = scenario("RampUpUsers")
+  val petClinicScenario: ScenarioBuilder = scenario("RampUpUsers")
     .exec(PetTypeResource.get)
 
-  setUp(myScenario.inject(
+  setUp(petClinicScenario.inject(
     incrementUsersPerSec(20)
       .times(1)
       .eachLevelLasting(5 seconds)
