@@ -1,3 +1,5 @@
+CREATE database petclinic;
+
 CREATE TABLE IF NOT EXISTS vets (
   id SERIAL,
   first_name VARCHAR(30),
