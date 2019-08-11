@@ -12,3 +12,5 @@ generated/
 springboot-petclinic-client/
 springboot-petclinic-server/
 spring-petclinic-rest-loadtest/target/*
+PetClinic-Loadtest/results/*
+PetClinic-Loadtest/target/*
