@@ -102,7 +102,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
         return visits;
     }
-    
+
 	@Override
 	public Visit findById(int id) throws DataAccessException {
 		Visit visit;
@@ -123,7 +123,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 	public Collection<Visit> findAll() throws DataAccessException {
 		Map<String, Object> params = new HashMap<>();
 		return this.namedParameterJdbcTemplate.query(
-				"SELECT id as visit_id, pets.id as pets_id, visit_date, description FROM visits LEFT JOIN pets ON visits.pet_id = pets.id",
+				"SELECT visits.id as visit_id, pets.id as pets_id, visit_date, description FROM visits LEFT JOIN pets ON visits.pet_id = pets.id",
 				params, new JdbcVisitRowMapperExt());
 	}
 
