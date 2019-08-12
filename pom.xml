@@ -109,6 +109,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>3.3.2-OPENCENSUS</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jdbc-core</artifactId>
 			<version>${spring-data-jdbc.version}</version>

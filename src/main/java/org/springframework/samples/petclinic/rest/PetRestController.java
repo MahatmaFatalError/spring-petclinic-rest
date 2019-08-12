@@ -17,6 +17,7 @@
 package org.springframework.samples.petclinic.rest;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -138,6 +139,17 @@ public class PetRestController {
 	public ResponseEntity<Void> lockPetTable(@RequestParam(name = "duration", defaultValue = "2000") Integer millis) throws InterruptedException {
 		jdbcTemplate.execute("LOCK TABLE pets IN ACCESS EXCLUSIVE MODE");
 		Thread.sleep(millis);
+
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+
+	@PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
+	@RequestMapping(value = "/sleepquery", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@Transactional
+	public ResponseEntity<Void> execSleepQuery(@RequestParam(name = "duration", defaultValue = "400") Integer millis) {
+		double seconds =  millis.doubleValue() / 1000;
+
+		jdbcTemplate.queryForMap("SELECT pg_sleep(?)", seconds);
 
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
