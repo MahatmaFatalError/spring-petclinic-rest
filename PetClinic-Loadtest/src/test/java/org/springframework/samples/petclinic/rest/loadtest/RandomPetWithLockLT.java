@@ -22,11 +22,16 @@ import org.loadtest4j.Request;
 import org.loadtest4j.Result;
 import org.loadtest4j.drivers.gatling.GatlingBuilder;
 
+/**
+ *
+ * 30 sec call petById and inject 10 times a table lock
+ *
+ */
 @Execution(ExecutionMode.CONCURRENT)
 public class RandomPetWithLockLT {
 
 	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:9966/petclinic/api")
-            .withDuration(Duration.ofSeconds(10))
+            .withDuration(Duration.ofSeconds(30))
             .withUsersPerSecond(2)
             .build();
 
@@ -34,7 +39,7 @@ public class RandomPetWithLockLT {
     @Test
     @Execution(ExecutionMode.CONCURRENT)
     public void shouldFindPets() {
-        List<Request> requests = Arrays.asList(Request.get("/pets/"+ new Random().nextInt(50000))
+        List<Request> requests = Arrays.asList(Request.get("/pets/"+ new Random().nextInt(13))
                                                 .withHeader("Accept", "application/json"));
 
         Result result = loadTester.run(requests);
@@ -48,13 +53,13 @@ public class RandomPetWithLockLT {
     @Execution(ExecutionMode.CONCURRENT)
     public void lockPets() throws InterruptedException, ClientProtocolException, IOException {
 
-    	int iterations = 3;
-    	int pauseMillis = 2500;
+    	int iterations = 10;
+    	int pauseMillis = 3000;
 
     	for (int i = 0; i < iterations; i++) {
 			Thread.sleep(pauseMillis);
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpGet request = new HttpGet("http://localhost:9966/petclinic/api/pets/lock?duration=1500"); //new URIBuilder().setParameter("duration", "1500").build()
+			HttpGet request = new HttpGet("http://localhost:9966/petclinic/api/pets/lock?duration=500"); //new URIBuilder().setParameter("duration", "1500").build()
 			HttpResponse response = client.execute(request);
 		}
     }
