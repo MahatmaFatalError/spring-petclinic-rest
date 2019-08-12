@@ -32,7 +32,7 @@ public class TracingConfig {
 	@Bean
 	public CacheManager cacheManager() {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Arrays.asList(new TracingMapCache("hello_cache")));
+		cacheManager.setCaches(Arrays.asList(new TracingMapCache("vets"),new TracingMapCache("owners")));
 		return cacheManager;
 	}
 
