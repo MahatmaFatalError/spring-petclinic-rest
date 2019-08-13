@@ -11,9 +11,12 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
+import io.opencensus.common.Scope;
+import io.opencensus.trace.Span;
 import io.opencensus.trace.SpanContext;
 import io.opencensus.trace.Tracer;
 import io.opencensus.trace.Tracing;
+import io.opencensus.trace.samplers.Samplers;
 import net.ttddyy.dsproxy.listener.MethodExecutionContext;
 import net.ttddyy.dsproxy.listener.lifecycle.JdbcLifecycleEventListener;
 import net.ttddyy.dsproxy.listener.lifecycle.JdbcLifecycleEventListenerAdapter;
@@ -66,7 +69,12 @@ public class DatasourceProxyBeanPostProcessor implements BeanPostProcessor {
 		public Object invoke(final MethodInvocation invocation) throws Throwable {
 			final Method proxyMethod = ReflectionUtils.findMethod(this.dataSource.getClass(), invocation.getMethod().getName());
 			if (proxyMethod != null) {
-				return proxyMethod.invoke(this.dataSource, invocation.getArguments());
+				Span span = Tracing.getTracer().spanBuilder("acquiring db connection from ProxyDataSourceInterceptor").setRecordEvents(true).setSampler(Samplers.alwaysSample()).startSpan();
+		     	 try (Scope ws = Tracing.getTracer().withSpan(span)) {
+		     		return proxyMethod.invoke(this.dataSource, invocation.getArguments());
+		     	 } finally {
+		 			span.end();
+		 		 }
 			}
 			return invocation.proceed();
 		}
