@@ -23,7 +23,7 @@ import org.loadtest4j.Result;
 import org.loadtest4j.drivers.gatling.GatlingBuilder;
 
 @Execution(ExecutionMode.CONCURRENT)
-public class AllPetsWithLockLT {
+public class PrototypLT {
 
 	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:9966/petclinic/api")
             .withDuration(Duration.ofSeconds(10))

@@ -31,16 +31,16 @@ import org.loadtest4j.drivers.gatling.GatlingBuilder;
  */
 public class ExhaustedConnectionPoolLT {
 
-	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:8888").withDuration(Duration.ofSeconds(10)).withUsersPerSecond(4).build();
+	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:8888").withDuration(Duration.ofSeconds(60)).withUsersPerSecond(5).build();
 
 	@Test
-	public void shouldFindVets() {
-		List<Request> requests = Arrays.asList(Request.get("/sleepquery").withQueryParam("duration", "500").withHeader("Accept", "application/json"));
+	public void connectionPoolLoadTest() {
+		List<Request> requests = Arrays.asList(Request.get("/sleepquery").withQueryParam("duration", "300").withHeader("Accept", "application/json"));
 
 		Result result = loadTester.run(requests);
 
 		assertThat(result.getPercentOk()).isGreaterThan(0.999);
-		assertThat(result.getResponseTime().getPercentile(90)).isLessThanOrEqualTo(Duration.ofMillis(1500));
+		assertThat(result.getResponseTime().getPercentile(90)).isLessThanOrEqualTo(Duration.ofMillis(600));
 	}
 
 

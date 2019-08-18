@@ -6,16 +6,13 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -32,7 +29,7 @@ import org.loadtest4j.drivers.gatling.GatlingBuilder;
 @Execution(ExecutionMode.CONCURRENT)
 public class VetsWithCacheMissLT {
 
-	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:9966/petclinic/api").withDuration(Duration.ofSeconds(30)).withUsersPerSecond(2).build();
+	private static final LoadTester loadTester = GatlingBuilder.withUrl("http://localhost:9966/petclinic/api").withDuration(Duration.ofSeconds(60)).withUsersPerSecond(5).build();
 
 	@Test
 	@Execution(ExecutionMode.CONCURRENT)
@@ -49,10 +46,12 @@ public class VetsWithCacheMissLT {
 	public void clearVetsCache() throws InterruptedException, ClientProtocolException, IOException {
 
 		int iterations = 10;
-		int pauseMillis = 3000;
+		int pauseMillis = 9000;
 
 		for (int i = 0; i < iterations; i++) {
-			Thread.sleep(pauseMillis);
+    		long pause =  Math.round(pauseMillis * Math.random());
+
+			Thread.sleep(pause);
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPost request = new HttpPost("http://localhost:9966/petclinic/api/vets");
 			request.addHeader("content-type", "application/json");
